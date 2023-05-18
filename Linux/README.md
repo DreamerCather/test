@@ -8,21 +8,27 @@ coverY: 0
 
 
 
-问题定位：
+问题定位及修复：
 
 1.在机器上执行 &#x20;
 
-{% code title="" %}
 ```sh
-lsof -n |grep deleted
+lsof -n | grep deleted
 ```
-{% endcode %}
 
+2.kill 进程
 
+```sh
+kill -9 ${pid}
+```
 
+3.批量kill进程
 
-
-问题修复：
+```shell
+lsof -n | grep delete | awk 'kill -9 {print "kill -9 " $2 }' > kill-deleted-pid.sh
+chmod +x kill-deleted-pid.sh
+./kill-deleted-pid.sh
+```
 
 
 
