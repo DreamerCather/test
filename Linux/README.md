@@ -34,5 +34,13 @@ chmod +x kill-deleted-pid.sh
 
 历史case:
 
-1\.
+1.进程输出日志到磁盘文件中，打满磁盘，删除文件，此时磁盘空间仍未释放
+
+2.业务php、nginx进程输出日志到磁盘中，同时logrotate采用Create切割日志和定时删除日志，出现df -h和du -sh \*显示不一致的情况，定位是有句柄未释放，继续向已被删除的日志写入数据
+
+问题修复：
+
+推荐业务使用CopyTruncate模式
+
+《logrotate机制详解》[https://blog.51cto.com/u\_15501087/5834179 ](https://blog.51cto.com/u\_15501087/5834179)
 
