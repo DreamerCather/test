@@ -21,11 +21,11 @@ do
     # 3.获取机器上的cgpu-monitor并判断重建成功，强制删除，没有pod则无需删除
     podName=`kubectl --kubeconfig $1 -n kube-system get pods --field-selector spec.nodeName=$i | grep baidu-cgpu-monitor-lrs | awk '{print $1}'`
     echo "cgpu-monitor-origin: $podName" > $i
-    kubectl $1 -n kube-system delete pods $podName --force --grace-period=0
+    kubectl $1 --kubeconfig -n kube-system delete pods $podName --force --grace-period=0
     sleep 8
     for i in {1..100};
     do
-       newPodName=`kubectl $1 -n kube-system get pods --field-selector spec.nodeName=$i | grep baidu-cgpu-monitor-lrs | awk '{print $1}'`
+       newPodName=`kubectl --kubeconfig $1 -n kube-system get pods --field-selector spec.nodeName=$i | grep baidu-cgpu-monitor-lrs | awk '{print $1}'`
        if [[ $newPodName != $podName ]];
        then
           echo "cgpu-monitor-new: $newPodName" > $i
