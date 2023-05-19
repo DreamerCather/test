@@ -10,11 +10,13 @@ kubeconfig=$1
 
 for i in `cat node_ips`
 do
-    echo $i
+    echo $1 
+    
     # 创建文件用于记录ip处理结果
     touch $i
+    
     # 2.远程ssh免密登陆机器执行chmod命令
-    cat $i | xargs -i{} ssh -o StrictHostKeyChecking=no zhaomingfu@{} "sudo chmod 777 /baidu-cgpu/mps/ && sudo chmod 777 /baidu-cgpu/nvidia*"
+    echo $i | xargs -i{} ssh -o StrictHostKeyChecking=no zhaomingfu@{} "sudo chmod 777 /baidu-cgpu/mps/ && sudo chmod 777 /baidu-cgpu/nvidia*"
  
     # 3.获取机器上的cgpu-monitor并判断重建成功，强制删除，没有pod则无需删除
     podName=`kubectl --kubeconfig $1 -n kube-system get pods --field-selector spec.nodeName=$i | grep baidu-cgpu-monitor-lrs | awk '{print $1}'`
@@ -32,7 +34,7 @@ do
     done
     
     # 4.远程ssh免密登陆机器执行ln -s命令
-    cat $i | xargs -i{} ssh -o StrictHostKeyChecking=no zhaomingfu@{} "sudo cd /home/opt/cgpu/lib64/ && ln -s libcgpu.so.2.1.15 libnvidia-ml.so.1 && ln -s  libnvidia-ml.so.1  libnvidia-ml.so"
+    echo $i | xargs -i{} ssh -o StrictHostKeyChecking=no zhaomingfu@{} "sudo cd /home/opt/cgpu/lib64/ && ln -s libcgpu.so.2.1.15 libnvidia-ml.so.1 && ln -s  libnvidia-ml.so.1  libnvidia-ml.so"
     
     # 5.找出GPU Pod进行相关命令执行
     for j in podList1
@@ -55,7 +57,7 @@ do
     done
     
     # 6. 远程ssh免密登陆机器执行删除软链命令
-    cat $i | xargs -i{} ssh -o StrictHostKeyChecking=no zhaomingfu@{} "sudo cd /home/opt/cgpu/lib64/ && rm -rf libnvidia-ml.so && rm -rf libnvidia-ml.so.1"
+    echo $i | xargs -i{} ssh -o StrictHostKeyChecking=no zhaomingfu@{} "sudo cd /home/opt/cgpu/lib64/ && rm -rf libnvidia-ml.so && rm -rf libnvidia-ml.so.1"
       
 done
 ```
